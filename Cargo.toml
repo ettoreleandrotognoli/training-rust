@@ -3,4 +3,10 @@ name = "precise_math"
 version = "0.1.0"
 authors = ["Éttore Leandro Tognoli <ettore.leandro.tognoli@gmail.com>"]
 
-[dependencies]
+[lib]
+name = "precise_math"
+crate-type = ["dylib"]
+
+[dependencies.cpython]
+version = "0.2"
+features = ["extension-module"]
