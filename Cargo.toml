@@ -1,0 +1,6 @@
+[package]
+name = "precise_math"
+version = "0.1.0"
+authors = ["Éttore Leandro Tognoli <ettore.leandro.tognoli@gmail.com>"]
+
+[dependencies]
