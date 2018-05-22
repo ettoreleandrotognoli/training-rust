@@ -6,6 +6,8 @@ use std::marker::Copy;
 use std::cmp::Eq;
 use std::cmp::PartialEq;
 
+pub use num::{One, one};
+
 #[derive(Debug)]
 struct Rational<T> {
   nominator : T,
@@ -23,18 +25,27 @@ impl<T> Rational<T> {
 
 }
 
+
+
+impl <T : One + Div<Output=T>> From<T> for Rational<T> {
+  fn from(value : T) -> Rational<T>{
+    Rational{ nominator : value, denominator : one() }
+  }
+}
+
 impl <T : Mul<Output=T> + PartialEq + Clone> PartialEq for Rational<T> {
   fn eq(&self,other: &Rational<T>) -> bool {
     self.nominator.clone() * other.denominator.clone() == self.denominator.clone() * other.nominator.clone()
   }
+
 }
 
 impl<T : Eq + Mul<Output=T> + Clone> Eq for Rational<T> {}
 
-impl<T : Mul<Output=T>> Mul for Rational<T> {
-  type Output = Rational<T>;
+impl<A : Mul<Output=B>,B> Mul for Rational<A> {
+  type Output = Rational<B>;
 
-  fn mul(self,other: Rational<T>) -> Self {
+  fn mul(self,other: Rational<A>) -> Self::Output {
     Rational{
       nominator: self.nominator * other.nominator,
       denominator: self.denominator * other.denominator
@@ -42,10 +53,10 @@ impl<T : Mul<Output=T>> Mul for Rational<T> {
   }
 }
 
-impl<T : Mul<Output=T>> Div for Rational<T> {
-  type Output = Rational<T>;
+impl<A : Mul<Output=B>,B> Div for Rational<A> {
+  type Output = Rational<B>;
 
-  fn div(self,other: Rational<T>) -> Self {
+  fn div(self,other: Rational<A>) -> Self::Output {
     Rational{
       nominator: self.nominator * other.denominator,
       denominator: self.denominator * other.nominator
@@ -56,7 +67,7 @@ impl<T : Mul<Output=T>> Div for Rational<T> {
 impl<T: Add<Output=T> + Mul<Output=T> + Copy> Add for Rational<T> {
   type Output = Rational<T>;
 
-  fn add(self, other : Rational<T>) -> Self{
+  fn add(self, other : Rational<T>) -> Self::Output{
     let new_denominator = self.denominator * other.denominator;
     Rational{
       nominator: self.nominator * other.denominator + other.nominator * self.denominator,
@@ -68,7 +79,7 @@ impl<T: Add<Output=T> + Mul<Output=T> + Copy> Add for Rational<T> {
 impl<T : Sub<Output=T> + Mul<Output=T> + Copy> Sub for Rational<T> {
   type Output = Rational<T>;
 
-  fn sub(self,other: Rational<T>) -> Self{
+  fn sub(self,other: Rational<T>) -> Self::Output{
     let new_denominator = self.denominator * other.denominator;
     Rational{
       nominator: self.nominator * other.denominator - other.nominator * self.denominator,
@@ -82,6 +93,13 @@ impl<T : Sub<Output=T> + Mul<Output=T> + Copy> Sub for Rational<T> {
 mod tests{
 
   use rational::Rational;
+
+
+  #[test]
+  fn from() {
+    assert_eq!(Rational::new(2,2),Rational::from(1));
+    assert_eq!(Rational::new(2.0,2.0),Rational::from(1.0));
+  }
 
   #[test]
   fn add() {
