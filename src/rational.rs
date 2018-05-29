@@ -26,21 +26,19 @@ impl<T> Rational<T> {
 }
 
 
-
 impl <T : One + Div<Output=T>> From<T> for Rational<T> {
   fn from(value : T) -> Rational<T>{
     Rational{ nominator : value, denominator : one() }
   }
 }
 
-impl <T : Mul<Output=T> + PartialEq + Clone> PartialEq for Rational<T> {
+impl <T : Mul<Output=T> + PartialEq + Copy> PartialEq for Rational<T> {
   fn eq(&self,other: &Rational<T>) -> bool {
-    self.nominator.clone() * other.denominator.clone() == self.denominator.clone() * other.nominator.clone()
+    self.nominator * other.denominator == self.denominator * other.nominator
   }
-
 }
 
-impl<T : Eq + Mul<Output=T> + Clone> Eq for Rational<T> {}
+impl<T : Eq + Mul<Output=T> + Copy> Eq for Rational<T> {}
 
 impl<A : Mul<Output=B>,B> Mul for Rational<A> {
   type Output = Rational<B>;
