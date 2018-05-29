@@ -17,7 +17,7 @@ fn count_doubles(_py: Python, val: &str) -> PyResult<u64> {
 }
 
 py_module_initializer!(precise_math,initprecise_math,PyInit_precise_math, |py,m| {
-    m.add(py,"count_doubles",py_fn!(py,count_doubles(val : &str)));
+    let _ = m.add(py,"count_doubles",py_fn!(py,count_doubles(val : &str)));
 
     Ok(())
 });
